@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hadis Shahih Bukhari & Muslim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 50px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    #searchInput, textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .hadis {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-left: 4px solid #3498db;
+      background-color: #ecf0f1;
+      border-radius: 5px;
+    }
+
+    .hadis .sumber {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .hadis .aplikasi {
+      font-style: italic;
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hadis Shahih</h1>
+    <input type="text" id="searchInput" placeholder="Cari hadis...">
+    
+    <div id="hadisList"></div>
+
+    <h2>Tambah Hadis</h2>
+    <form id="hadisForm">
+      <textarea id="teksHadis" placeholder="Teks hadis" required></textarea>
+      <input type="text" id="sumberHadis" placeholder="Sumber (misal: HR. Bukhari no. 1)" required>
+      <textarea id="aplikasiHadis" placeholder="Contoh aplikasi di zaman sekarang" required></textarea>
+      <button type="submit">Tambah Hadis</button>
+    </form>
+  </div>
+
+  <script>
+    const defaultHadis = [
+      {
+        teks: "Sesungguhnya amal itu tergantung niatnya, dan setiap orang akan mendapatkan apa yang dia niatkan.",
+        sumber: "HR. Bukhari no. 1",
+        aplikasi: "Kita harus meluruskan niat dalam setiap pekerjaan, termasuk saat bekerja, berdagang, atau belajar."
+      },
+      {
+        teks: "Tidak sempurna iman seseorang sampai ia mencintai untuk saudaranya apa yang ia cintai untuk dirinya sendiri.",
+        sumber: "HR. Bukhari dan Muslim",
+        aplikasi: "Di era media sosial, kita seharusnya berbagi kebaikan dan tidak menyebar kebencian."
+      }
+    ];
+
+    // Ambil dari LocalStorage atau gunakan default
+    let hadisList = JSON.parse(localStorage.getItem("hadisList")) || defaultHadis;
+
+    function simpanKeLocalStorage() {
+      localStorage.setItem("hadisList", JSON.stringify(hadisList));
+    }
+
+    function tampilkanHadis(list) {
+      const container = document.getElementById("hadisList");
+      container.innerHTML = "";
+
+      list.forEach(hadis => {
+        const div = document.createElement("div");
+        div.className = "hadis";
+        div.innerHTML = `
+          <div class="teks">${hadis.teks}</div>
+          <div class="sumber">${hadis.sumber}</div>
+          <div class="aplikasi">💡 Aplikasi zaman sekarang: ${hadis.aplikasi}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Form tambah hadis dengan password
+    document.getElementById("hadisForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const password = prompt("Masukkan password untuk menambahkan hadis:");
+
+      if (password === "12345") {
+        const teks = document.getElementById("teksHadis").value.trim();
+        const sumber = document.getElementById("sumberHadis").value.trim();
+        const aplikasi = document.getElementById("aplikasiHadis").value.trim();
+
+        if (teks && sumber && aplikasi) {
+          const baru = { teks, sumber, aplikasi };
+          hadisList.unshift(baru);
+          simpanKeLocalStorage();
+          tampilkanHadis(hadisList);
+
+          this.reset();
+          alert("Hadis berhasil ditambahkan!");
+        } else {
+          alert("Semua kolom harus diisi!");
+        }
+      } else {
+        alert("Password salah! Hadis tidak ditambahkan.");
+      }
+    });
+
+    // Pencarian
+    document.getElementById("searchInput").addEventListener("input", function() {
+      const keyword = this.value.toLowerCase();
+      const hasil = hadisList.filter(h =>
+        h.teks.toLowerCase().includes(keyword) ||
+        h.sumber.toLowerCase().includes(keyword) ||
+        h.aplikasi.toLowerCase().includes(keyword)
+      );
+      tampilkanHadis(hasil);
+    });
+
+    // Tampilkan awal
+    tampilkanHadis(hadisList);
+  </script>
+</body>
+</html>
+
